@@ -6,29 +6,30 @@ import EmployeeCreate from './components/EmployeeCreate';
 import EmployeeEdit from './components/EmployeeEdit';
 
 const RouterComponent = () => {
-  return (
-    <Router sceneStyle={{ paddingTop: 65 }}>
-      <Stack key='root'>
-        <Scene key="auth">
-          <Scene key="login" component={LoginForm} title="Please Login" />
+  CF.getAccessToken((token) => {
+    return (
+      <Router sceneStyle={{ paddingTop: 65 }}>
+        <Scene key="root">
+          <Scene key="auth">
+            <Scene key="login" component={LoginForm} title="Please Login" initial = {token ? false : true}/>
+          </Scene>
+  
+          <Scene key="main">
+            <Scene
+              onRight={() => Actions.todoDetail()}
+              rightTitle="Add"
+              key="todoList"
+              component={ToDoList}
+              title="To Do"
+              initial = {token ? true : false}
+            />
+            <Scene key="todoDetail" component={ToDoDetail} title="To do details" />
+          </Scene>
         </Scene>
-
-        <Scene key="main">
-          <Scene
-            onRight={() => Actions.employeeCreate()}
-            rightTitle="Add"
-            key="employeeList"
-            component={EmployeeList}
-            title="Employees"
-            initial
-          />
-          <Scene key="employeeCreate" component={EmployeeCreate} title="Create Employee" />
-          <Scene key="employeeEdit" component={EmployeeEdit} title="Edit Employee" />
-        </Scene>
-      </Stack>
-      
-    </Router>
-  );
+        
+      </Router>
+    );
+  })
 };
 
 export default RouterComponent;

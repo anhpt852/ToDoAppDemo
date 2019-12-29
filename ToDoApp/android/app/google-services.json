@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "306339160820",
+    "firebase_url": "https://todoapp-90838.firebaseio.com",
+    "project_id": "todoapp-90838",
+    "storage_bucket": "todoapp-90838.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306339160820:android:3f4b8dde2d7e466d05b4a1",
+        "android_client_info": {
+          "package_name": "com.anhpt.ToDoApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306339160820-dh17mbhaed11k9p4mqjgkqr5on38n2an.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCL2lOqwsVHkDQW6Ic9d2dtnJMzglVb6Ik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306339160820-dh17mbhaed11k9p4mqjgkqr5on38n2an.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "306339160820-gfcvalreaab2gvbpm682jg1l16i7b4ci.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.ToDoApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
