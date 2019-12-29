@@ -1,15 +1,22 @@
 import {
-    GET_LIST_TODO,
+    TODO_ONCHANGETEXT,
     GET_LIST_TODO_SUCCESS,
-    GET_LIST_TODO_FAIL
+    TODO_CREATE,
+    TODO_UPDATE
   } from '../actions/types';
   
   const INITIAL_STATE = {
     listToDo: [],
     currentSelectedToDo: {},
     title: '', 
-    content: '', 
-    datetime: '',
+    titleError: '', 
+    content: '',
+    contentError: '',
+    priority: {},
+    priorityError: '',
+    datetime: new Date(),
+    datetimeText: '',
+    datetimeError: '',
     error: '',
     loading: false
   };

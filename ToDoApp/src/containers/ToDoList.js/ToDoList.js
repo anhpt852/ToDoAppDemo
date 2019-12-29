@@ -33,16 +33,13 @@ class ToDoList extends Component {
                     onRightPressed={this.onRightButtonClick}
                     title="Biên Bản"
                 />
-                <View style={topContainer}>
-                    
-                </View>
-                
+ 
                 <View style={flatListContainer}>
                     <FlatList
                         data={stores.listReportObjects}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={this.renderListItem}
-                        ListHeaderComponent={this.renderReportListHeader}
+                        // ListHeaderComponent={this.renderReportListHeader}
                         showsVerticalScrollIndicator={false}
                     />
                 </View>
@@ -53,7 +50,11 @@ class ToDoList extends Component {
 
 
 const mapStateToProps = state => {
+    const todos = _.map(state.todo.listToDo, (val, uid) => {
+        return { ...val, uid };
+      });
     
+      return { todos };
 };
 
 AppRegistry.registerComponent('ToDoList', () => ToDoList);
