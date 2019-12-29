@@ -1,16 +1,21 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
-  StyleSheet,
-  Text,
+  FlatList,
   View
 } from 'react-native';
 import styles from "./ToDoListStyles";
 import { connect } from 'react-redux';
+import Navbar from '../../components/NavBar/NavBar'
 import { todosFetch } from '../actions';
+import ToDoListItem from './ToDoListItem/ToDoListItem';
 class ToDoList extends Component {
     componentWillMount() {
         this.props.todosFetch();
+    }
+
+    renderListItem(item){
+        return <ToDoListItem/>
     }
 
     render() {
@@ -36,7 +41,7 @@ class ToDoList extends Component {
                     <FlatList
                         data={stores.listReportObjects}
                         keyExtractor={(item, index) => index.toString()}
-                        renderItem={this.renderReportListItem}
+                        renderItem={this.renderListItem}
                         ListHeaderComponent={this.renderReportListHeader}
                         showsVerticalScrollIndicator={false}
                     />
