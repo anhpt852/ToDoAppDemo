@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import Picker from '../react-native-wheel-picker'
 import _ from 'lodash';
-import { Navigation } from 'react-native-navigation';
-
+import {Actions} from 'react-native-router-flux';
+import Lightbox from '../Lightbox/BaseLightbox';
 var PickerItem = Picker.Item;
 var { height, width } = Dimensions.get('window');
 
@@ -36,7 +36,7 @@ class WheelPickerWithObjectInput extends Component {
 
     dismissWheelPicker(e) {
         console.log('abc');
-        Navigation.dismissModal(this.props.componentId);
+        Actions.pop();
     }
 
     onPickerSelect(index) {
@@ -48,7 +48,7 @@ class WheelPickerWithObjectInput extends Component {
     }
 
     onDismiss() {
-        Navigation.dismissModal(this.props.componentId);
+        Actions.pop();
     }
 
     onConfirm() {
@@ -56,7 +56,7 @@ class WheelPickerWithObjectInput extends Component {
         if (this.state.selectedItem) {
             this.props.onConfirm(this.state.selectedItem.id);
         }
-        Navigation.dismissModal(this.props.componentId);
+        Actions.pop();
     }
 
     onAddItem = () => {
@@ -73,7 +73,7 @@ class WheelPickerWithObjectInput extends Component {
 
 
         return (
-            <View style={styles.container}>
+            <Lightbox style={styles.container}>
                 <TouchableOpacity activeOpacity={1} style={styles.containerTouch} onPress={this.dismissWheelPicker}>
                 </TouchableOpacity>
                 <View style={styles.wheelContainer}>
@@ -112,7 +112,7 @@ class WheelPickerWithObjectInput extends Component {
                     </View>
                 </View>
 
-            </View>
+            </Lightbox>
         );
     }
 }
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     container: {
         width: width,
         height: height,
-        backgroundColor: 'rgba(0,0,0,0.7)',
+        backgroundColor: '#000000',
     },
     title: {
         marginLeft: 10,

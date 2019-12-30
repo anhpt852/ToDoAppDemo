@@ -3,7 +3,7 @@ import {
     Dimensions,
     Platform
   } from "react-native"
-  import Config from '../../../commons/Config';
+  import Config from '../../commons/Config';
   const { width, height } = Dimensions.get('window');
   import { ifIphoneX } from 'react-native-iphone-x-helper';
   
@@ -12,6 +12,7 @@ import {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      backgroundColor: 'white'
     },
   
     content: {
@@ -35,9 +36,9 @@ import {
       width: '100%',
       marginBottom: -40,
       ...ifIphoneX({
-        marginTop: -44
+        marginTop: 44
       }, {
-        marginTop: -20
+        marginTop: 20
         }),
     },
   

@@ -33,11 +33,13 @@ target 'ToDoApp' do
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
-  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
-  pod 'RNFBFirestore', :path => '../node_modules/@react-native-firebase/firestore'
-  pod 'RNFBDatabase', :path => '../node_modules/@react-native-firebase/database'
 
-  
+  pod 'RNFirebase', :path => '../node_modules/react-native-firebase/ios'
+  pod 'Firebase/Core'
+  pod 'Firebase/Database'
+  pod 'Firebase/Auth'
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
   target 'ToDoAppTests' do
     inherit! :search_paths
     # Pods for testing

@@ -34,6 +34,8 @@ export const todosCreate = ({ title, content, priority, datetime }) => {
       firebase.database().ref(`/users/${currentUser.uid}/todos`)
         .push({ title, content, priority, datetime })
         .then(() => {
+            console.log('aaaa');
+            
             dispatch({ type: TODO_CREATE });
             Actions.todoList({ type: 'reset' });
         });

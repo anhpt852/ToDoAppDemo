@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
-  StyleSheet,
+  TouchableOpacity,
   Text,
+  Image,
   View
 } from 'react-native';
 import styles from "./ToDoListItemStyles"
@@ -27,17 +28,17 @@ class ToDoListItem extends Component {
         return (
             <TouchableOpacity onPress={this.onPress} style={container}>
                 <Image style={cellBackgroundStyles}/>
-                <TouchableOpacity style={selectIconContainer}>
+                {/* <TouchableOpacity style={selectIconContainer}>
                     <Image
                         style={{ width: 50, height: 50 }}
                         source={this.props.isSelected ? icTickUnselected : icTickSelected}
                     />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <Text numberOfLines={2} style={contentText}>
-                    {this.props.content}
+                    {this.props.item.title}
                 </Text>
                 <Text style={timeText}>
-                    {this.props.time}
+                    {this.props.item.datetime}
                 </Text>
                 <View style={this.props.isHeader ? [bottomLine,{ backgroundColor:'#C9DCD5'}] : bottomLine}/>
             </TouchableOpacity>
@@ -45,9 +46,7 @@ class ToDoListItem extends Component {
     }
 }
 
-const mapStateToProps = state => {
-    
-};
+
 
 AppRegistry.registerComponent('ToDoListItem', () => ToDoListItem);
-export default connect(mapStateToProps, {  }) (ToDoListItem);
+export default ToDoListItem;

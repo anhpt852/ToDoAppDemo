@@ -24,7 +24,7 @@ class CommonTextField extends Component {
     };
 
     onChangeText = (text) => {
-        this.props.onChangeText(this.props.name, text);
+        this.props.onChangeText(text);
     }
 
     focus() {

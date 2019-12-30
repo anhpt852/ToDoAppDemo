@@ -30,7 +30,6 @@ export default StyleSheet.create({
         flex: 2,
         fontSize: 18,
         paddingHorizontal: 5,
-        fontFamily:'OpenSans',
         color:'#5c5c5c',
     },
 
@@ -38,7 +37,6 @@ export default StyleSheet.create({
         paddingLeft: 5,
         flex: 2,
         fontSize: 18,
-        fontFamily:'OpenSans',
         color:'#5c5c5c',
     },
 

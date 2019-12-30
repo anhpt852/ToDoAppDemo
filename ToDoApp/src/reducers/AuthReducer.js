@@ -8,7 +8,9 @@ import {
 
 const INITIAL_STATE = {
   email: '',
+  errorEmail: '',
   password: '',
+  passwordError: '',
   user: null,
   error: '',
   loading: false

@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 import _ from 'lodash';
-var closeIcon = require('../../images/NavBar/close.png');
-var backIcon = require('../../images/NavBar/back.png');
+var closeIcon = require('../../images/NavBar/ic_navbar_close.png');
+var backIcon = require('../../images/NavBar/ic_navbar_back.png');
 const navBarHeight = Platform.OS === 'ios' ? 64 : 40;
-import { Navigation } from 'react-native-navigation';
+import { Actions } from 'react-native-router-flux';
 class NavBar extends Component {
 
   constructor() {
@@ -27,7 +27,7 @@ class NavBar extends Component {
     console.log('abcccc');
     
     if (this.props.hasBackBtn && !this.props.onLeftPressed) {
-      Navigation.pop(this.props.componentId)
+      Actions.pop()
     } else {
       this.props.onLeftPressed();
     } 
@@ -36,7 +36,7 @@ class NavBar extends Component {
 
   onRightPressed() {
     if (this.props.hasRightBtn && !this.props.onRightPressed) {
-      Navigation.dismissModal(this.props.componentId)
+      Actions.pop()
     } else {
       this.props.onRightPressed();
     }
@@ -46,6 +46,7 @@ class NavBar extends Component {
   render() {
     return (
       <View style={styles.container}>
+        {this.props.backgroundImg && <Image source={this.props.backgroundImg} style={styles.backgroundImage}/>}
         {this.props.hasBackBtn &&
           <TouchableOpacity onPress={this.onLeftPressed} style={styles.backBtn}>
             <Image
@@ -109,32 +110,43 @@ const styles = StyleSheet.create({
         }),
       }),
   },
+  backgroundImage:{
+    position:'absolute',
+    top:0,
+    left:0,
+    width: '100%',
+    ...ifIphoneX({
+      height: 88,
+    }, {
+        height: 64,
+      }),
+  },
   textContainer: {
     ...ifIphoneX({
       top: 44,
       height: 44,
     }, {
-        ...Platform.select({       
+        ...Platform.select({
           ios: {
             height: 44,
-            top: 10,
+            top: 20,
           },
           android: {
-            height: 64,
             top: 10,
+            height: 64,
           },
         }),
       }),
-    
+
     position: 'absolute',
     left: 60,
     right: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor:'white'
+    // backgroundColor:'white'
   },
   text: {
-    color: '#161F3D',
+    color: '#FFFFFF',
     fontSize: 20,
     alignSelf: 'center',
   },
@@ -147,17 +159,16 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   imgBack: {
-    width: 20,
-    height: 20,
+    width: 25,
+    height: 25,
   },
   title: {
     fontSize: 20,
-    fontFamily:'Helvetica-Bold',
-    color: '#161F3D',
+    color: '#FFFFFF',
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 18,
     textAlign: 'center',
   },
 
@@ -169,7 +180,7 @@ const styles = StyleSheet.create({
     }, {
         ...Platform.select({
           ios: {
-            top: 20
+            top: 25
           },
         }),
       }),
@@ -183,7 +194,7 @@ const styles = StyleSheet.create({
     }, {
         ...Platform.select({
           ios: {
-            top: 20
+            top: 25
           },
         }),
       }),
@@ -191,21 +202,15 @@ const styles = StyleSheet.create({
 
   textRightStyles: {
     // width: 60,
-    fontSize: 17,
-    color: '#F93963',
-    ...ifIphoneX({
-      height: 44,
-    }, {
-        ...Platform.select({
+    color: '#39A84D',
+    marginTop: 25,
+    marginBottom: 17,
+    ...Platform.select({
           ios: {
-            top: 6,
-            height: 44,
-          },
-          android: {
-            
+            marginTop: 30,
+            marginBottom: 10,
           },
         }),
-      }),
   }
 });
 

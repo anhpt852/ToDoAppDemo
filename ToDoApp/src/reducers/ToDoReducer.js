@@ -12,7 +12,10 @@ import {
     titleError: '', 
     content: '',
     contentError: '',
-    priority: {},
+    priority: {
+        id: 1,
+        value: 'Cao',
+    },
     priorityError: '',
     datetime: new Date(),
     datetimeText: '',

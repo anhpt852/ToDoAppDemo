@@ -1,4 +1,4 @@
-import firebase from '@react-native-firebase/app';
+import firebase from 'react-native-firebase';
 import { Actions } from 'react-native-router-flux';
 import {
   EMAIL_CHANGED,

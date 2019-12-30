@@ -11,20 +11,19 @@ import {
 
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { emailChanged, passwordChanged, loginUser } from '../actions';
-import Loader from '../../../components/Loader';
+import { emailChanged, passwordChanged, loginUser } from '../../actions';
+import Loader from '../../components/Loader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import CommonTextField from '../../../components/TextField/CommonTextField';
-import PasswordTextField from '../../../components/TextField/PasswordTextField';
-import styleMain from '../../../styles/styles';
-import styles from "./LoginStyles"
+import CommonTextField from '../../components/TextField/CommonTextField';
+import PasswordTextField from '../../components/TextField/PasswordTextField';
+import styles from "./AuthScreenStyles"
+import {Actions} from 'react-native-router-flux';
+import icUsename from '../../images/Login/ic_at.png';
+import icPassword from '../../images/Login/ic_lock.png';
+import icLook from '../../images/Login/ic_eye.png';
+import icLogo from '../../images/Login/ic_logo.png';
 
-import icUsename from '../../../images/Login/ic_at.png';
-import icPassword from '../../../images/Login/ic_lock.png';
-import icLook from '../../../images/Login/ic_eye.png';
-import icLogo from '../../../images/Login/ic_logo.png';
-
-class LoginScreen extends Component {
+class AuthScreen extends Component {
 
   static navigatorStyle = {
     navBarHidden: true
@@ -35,12 +34,15 @@ class LoginScreen extends Component {
   }
 
   actionClick() {
-    stores.onLoginEmail();
+    const { email, password } = this.props;
+
+    this.props.loginUser({ email, password });
+
   }
 
 
   onClickBack() {
-    Navigation.pop(this.props.componentId);
+    Actions.pop();
   }
 
   render() {
@@ -49,13 +51,11 @@ class LoginScreen extends Component {
       headerContainer, headerTitle, headerSubtitle,
       scrollView, loginButtonText } = styles;
 
-    const { largeText } = styleMain;
-
     return (
       <View style={container}>
         <Loader
           onRequestClose={this.onRequestClose}
-          loading={stores.loading} />
+          loading={this.props.loading} />
         {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}> */}
         <KeyboardAwareScrollView
           contentContainerStyle={scrollView}
@@ -77,16 +77,16 @@ class LoginScreen extends Component {
               </View>
               <CommonTextField name="username"
                 placeholder='Nhập email'
-                onChangeText={this.onChangeText.bind(this)}
-                errorText={stores.errorUsername}
-                value={stores.username}
+                onChangeText={(value) => this.props.emailChanged(value)}
+                errorText={this.props.errorEmail}
+                value={this.props.email}
                 image={icUsename}
               />
               <PasswordTextField name="password"
                 titleText='MẬT KHẨU' 
                 placeholder='Nhập mật khẩu'
-                onChangeText={this.onChangeText.bind(this)}
-                errorText={stores.errorPassword}
+                onChangeText={(value) => this.props.passwordChanged(value)}
+                errorText={this.props.passwordError}
                 image={icPassword}
                 imageLook={icLook}
               />
@@ -95,7 +95,7 @@ class LoginScreen extends Component {
             <TouchableOpacity
               onPress={this.actionClick.bind(this)}>
               <View style={loginButton}>
-                <Text style={[largeText, loginButtonText]}>
+                <Text style={[loginButtonText]}>
                   Đăng nhập
                 </Text>
               </View>
@@ -109,8 +109,10 @@ class LoginScreen extends Component {
 }
 
 const mapStateToProps = state => {
-    
+  const { email, errorEmail,  password, passwordError, loading} = state.auth;
+
+  return { email, errorEmail,  password, passwordError, loading};
 };
 
 AppRegistry.registerComponent('AuthScreen', () => AuthScreen);
-export default connect(mapStateToProps, {  }) (AuthScreen);
+export default connect(mapStateToProps, { emailChanged, passwordChanged, loginUser }) (AuthScreen);

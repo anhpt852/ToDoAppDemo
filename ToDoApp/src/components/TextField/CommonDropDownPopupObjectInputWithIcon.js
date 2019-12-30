@@ -13,8 +13,7 @@ import {
 } from 'react-native';
 import styleMain from '../../styles/styles';
 import Config from '../../commons/Config';
-// import icDown from '../../Images/Register/ic_down.png';
-import { Navigation } from 'react-native-navigation';
+import {Actions} from 'react-native-router-flux';
 import _ from 'lodash';
 var { height, width } = Dimensions.get('window');
 function RenderText(props) {
@@ -61,6 +60,7 @@ class CommonDropDownPopupObjectInputWithIcon extends Component {
     }
 
     onPressAction(e) {
+        console.log('abcccc');
         const arr = this.props.items;
         if (_.isEmpty(arr)) {
             if (this.props.handleEmptyAction) this.props.handleEmptyAction();
@@ -68,48 +68,29 @@ class CommonDropDownPopupObjectInputWithIcon extends Component {
         }
 
         const self = this;
-
-        Navigation.showModal({
-            component: {
-                name: 'ShareUp.WheelPickerWithObjectInput',
-                passProps: {
-                  onDismiss: () => {
-                      Keyboard.dismiss();
-                      if (self.props.onDismiss) {
-                          self.props.onDismiss();
-                      }
-                  },
-                  onConfirm: (_id) => {
-                      self.setState({
-                          selectedId: _id
-                      });
-                      if (self.props.onConfirm) {
-                          self.props.onConfirm(_.find(this.props.items, { id: _id }));
-                      }
-                  },
-                  dismissBtnText: self.props.dismissBtnText,
-                  confirmBtnText: self.props.confirmBtnText,
-                  selectedId: self.state.selectedId,
-                  itemList: arr,
-                  title: self.props.titleText,
-                  error: self.props.errorText,
-                },
-                options: {
-                  layout: { backgroundColor: 'transparent' },
-                  screenBackgroundColor: 'transparent',
-                  modalPresentationStyle: Platform.OS === 'ios' ? 'overFullScreen' :'overCurrentContext',
-                  topBar: {
-                    visible: false,
-                    height: 0
-                  },
-                  bottomTabs: {
-                    visible: false,
-                    animate: true,
-                    drawBehind: true
-                  }
+        
+        Actions.wheelPickerWithObjectInput({
+            onDismiss: () => {
+                Keyboard.dismiss();
+                if (self.props.onDismiss) {
+                    self.props.onDismiss();
                 }
-              }
-          });
+            },
+            onConfirm: (_id) => {
+                self.setState({
+                    selectedId: _id
+                });
+                if (self.props.onConfirm) {
+                    self.props.onConfirm(_.find(this.props.items, { id: _id }));
+                }
+            },
+            dismissBtnText: self.props.dismissBtnText,
+            confirmBtnText: self.props.confirmBtnText,
+            selectedId: self.state.selectedId,
+            itemList: arr,
+            title: self.props.titleText,
+            error: self.props.errorText,
+          })
     }
 
     render() {

@@ -1,35 +1,39 @@
 import React from 'react';
-import {Stack, Scene, Router, Actions } from 'react-native-router-flux';
-import LoginForm from './components/LoginForm';
-import EmployeeList from './components/EmployeeList';
-import EmployeeCreate from './components/EmployeeCreate';
-import EmployeeEdit from './components/EmployeeEdit';
+import {Stack,Scene, Router, Actions, Lightbox, Overlay } from 'react-native-router-flux';
+import AuthScreen from './containers/AuthScreen/AuthScreen';
+import ToDoList from './containers/ToDoList/ToDoList';
+import ToDoDetail from './containers/ToDoDetail/ToDoDetail';
+import WheelPickerWithObjectInput from './components/TextField/WheelPickerWithObjectInput';
+import CF from './commons/CF'
+
+
 
 const RouterComponent = () => {
-  CF.getAccessToken((token) => {
-    return (
-      <Router sceneStyle={{ paddingTop: 65 }}>
-        <Scene key="root">
-          <Scene key="auth">
-            <Scene key="login" component={LoginForm} title="Please Login" initial = {token ? false : true}/>
-          </Scene>
-  
-          <Scene key="main">
-            <Scene
-              onRight={() => Actions.todoDetail()}
-              rightTitle="Add"
-              key="todoList"
-              component={ToDoList}
-              title="To Do"
-              initial = {token ? true : false}
-            />
-            <Scene key="todoDetail" component={ToDoDetail} title="To do details" />
-          </Scene>
-        </Scene>
-        
-      </Router>
-    );
-  })
+  return (
+    <Router sceneStyle={{ }}>
+      <Overlay key="overlay">
+        <Lightbox key="modal" hideNavBar>
+          <Stack key="root" hideNavBar>
+            
+            <Scene key="auth">
+              <Scene key="login" component={AuthScreen} initial = {true}  hideNavBar/>
+            </Scene>
+
+            <Scene key="main">
+              <Scene
+                onRight={() => Actions.todoDetail()}
+                hideNavBar
+                key="todoList"
+                component={ToDoList}
+              />
+              <Scene key="todoDetail" component={ToDoDetail} hideNavBar/>
+            </Scene>
+          </Stack>
+          <Scene key="wheelPickerWithObjectInput" component={WheelPickerWithObjectInput} direction='vertical' hideNavBar/>
+        </Lightbox>
+      </Overlay>
+    </Router>
+  );
 };
 
 export default RouterComponent;
