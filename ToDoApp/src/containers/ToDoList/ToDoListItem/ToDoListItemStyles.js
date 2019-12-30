@@ -1,16 +1,19 @@
 import {
-    StyleSheet
+    StyleSheet,
+    Dimensions
 } from "react-native"
-
+const { width, height } = Dimensions.get('window');
 export default StyleSheet.create({
     container: {
         flex: 1,
         flexDirection:'row',
         paddingVertical: 8,
         paddingHorizontal: 8,
+        alignItems:'center',
     },
 
     cellBackground:{
+        opacity: 1,
         position:'absolute',
         top:0,
         left:0, 
@@ -19,25 +22,44 @@ export default StyleSheet.create({
     },
 
     selectIconContainer:{
-        width: 80,
+        width: 50,
+        height: 50,
+        padding: 5,
         alignItems:'center',
         justifyContent:'center',
+    },
+
+    selectIcon:{
+        width: 30, 
+        height: 30 , 
+    },
+
+    leftContent:{
+        width: width - 200,
+        marginVertical: 8,
+    },
+
+    titleText:{
+        fontSize: 20,
         paddingHorizontal: 5,
-     
+        color:'#24B97B',
+        marginBottom: 10,
+        fontWeight:'bold',
     },
 
     contentText:{
-        flex: 2,
-        fontSize: 18,
+        fontSize: 16,
         paddingHorizontal: 5,
-        color:'#5c5c5c',
+        color:'#24B97B',
+        fontWeight: '600',
     },
 
     timeText:{
         paddingLeft: 5,
-        flex: 2,
-        fontSize: 18,
-        color:'#5c5c5c',
+        width: 100,
+        fontSize: 14,
+        color:'#24B97B',
+        textAlign:'right'
     },
 
     bottomLine:{

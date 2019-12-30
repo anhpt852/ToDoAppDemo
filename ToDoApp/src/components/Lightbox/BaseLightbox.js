@@ -49,7 +49,6 @@ export default class BaseLightbox extends Component {
         }}
       >
         {children}
-        <Button title="Close" onPress={this.closeModal} />
       </View>
     );
   };

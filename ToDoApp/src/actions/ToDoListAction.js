@@ -4,8 +4,9 @@ import {
     TODO_UPDATE,
     TODO_CREATE,
     TODO_ONCHANGETEXT,
+    TODO_SETSELECTED_LIST,
     GET_LIST_TODO_SUCCESS,
-
+    SET_TODO_LIST
 } from './types';
 
 export const todoOnChangeText = ({ prop, value }) => {
@@ -15,7 +16,20 @@ export const todoOnChangeText = ({ prop, value }) => {
     };
 };
 
-  
+export const setSelectedTodoList = (list) => {
+    return {
+      type: TODO_SETSELECTED_LIST,
+      payload: list
+    };
+};
+
+export const setTodoList = (list) => {
+    return {
+      type: SET_TODO_LIST,
+      payload: list
+    };
+};
+
 export const todosFetch = () => {
     const { currentUser } = firebase.auth();
   

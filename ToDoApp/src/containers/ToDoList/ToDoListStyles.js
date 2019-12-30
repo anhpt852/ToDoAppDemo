@@ -28,4 +28,28 @@ export default StyleSheet.create({
         width: width,
         height: (height - 150)/2
     },
+
+    cellButtonContainer:{
+        alignItems: 'center',
+        backgroundColor: '#F7F7F7',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingLeft: 15,
+    },
+
+    rightCellButton:{
+        alignItems: 'center',
+        bottom: 0,
+        justifyContent: 'center',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        width: 75
+    },
+
+    rightCellButtonImage:{
+        width:50,
+        height:50,
+      },
 });

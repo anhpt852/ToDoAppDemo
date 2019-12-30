@@ -38,7 +38,6 @@ target 'ToDoApp' do
   pod 'Firebase/Core'
   pod 'Firebase/Database'
   pod 'Firebase/Auth'
-  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
   target 'ToDoAppTests' do
     inherit! :search_paths

@@ -26,10 +26,18 @@ class ToDoDetail extends Component {
         this.state = {
             isDateTimePickerVisible: false
         }
+        if(this.props.item){
+            this.props.todoOnChangeText({ prop: 'title', value: this.props.item.title })
+            this.props.todoOnChangeText({ prop: 'content', value: this.props.item.content })
+            this.props.todoOnChangeText({ prop: 'priority', value: this.props.item.priority })
+            const dateFormat = DateFormat(this.props.item.datetime, 'dd-mm-yyyy hh:mm');
+            this.props.todoOnChangeText({ prop: 'datetime', value: this.props.item.datetime })
+            this.props.todoOnChangeText({ prop: 'datetimeText',value: dateFormat })
+        }
     };
 
     onRemove(){
-
+        this.props.todosDelete({ uid: this.props.item.uid});
     }
 
     onConfirmClick(){
@@ -68,7 +76,7 @@ class ToDoDetail extends Component {
                 <Navbar
                     hasBackBtn
                     title="Chi tiết nhắc nhở"
-                    hasRightBtn
+                    hasRightBtn = {this.props.item ? true : false}
                     customRightImg={ic_remove_todo}
                     backgroundImg={img_nav_background}
                     onRightPressed={this.onRemove.bind(this)}
@@ -123,7 +131,7 @@ class ToDoDetail extends Component {
                                     value: 'Bình thường',
                                 },
                                 {
-                                    id: 2,
+                                    id: 3,
                                     value: 'Thấp',
                                 },
                             ]}
