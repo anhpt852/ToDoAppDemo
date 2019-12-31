@@ -34,11 +34,11 @@ import {
       backgroundColor: '#18C4BA',
       height: 294,
       width: '100%',
-      marginBottom: -40,
+      paddingBottom: -40,
       ...ifIphoneX({
-        marginTop: 44
+        paddingTop: 44
       }, {
-        marginTop: 20
+        paddingTop: 20
         }),
     },
   
@@ -51,15 +51,17 @@ import {
     textTitle:{
       color:'#ffffff',
       fontFamily:'Helvetica Neue',
-      fontSize: 21,
+      fontSize: 25,
       marginTop: 20,
       marginBottom: 8,
+      fontWeight: 'bold',
     },
   
     textContent:{
       color:'#ffffff',
       fontFamily:'Helvetica Neue',
-      fontSize: 15,
+      fontSize: 17,
+      fontWeight: '600',
     },
   
     titleLeftTextContainer: {

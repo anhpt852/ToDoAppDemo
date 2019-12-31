@@ -1,5 +1,6 @@
 import firebase from 'react-native-firebase';
 import { Actions } from 'react-native-router-flux';
+import CF from '../commons/CF'
 import {
   EMAIL_CHANGED,
   PASSWORD_CHANGED,
@@ -43,6 +44,7 @@ const loginUserFail = (dispatch) => {
 };
 
 const loginUserSuccess = (dispatch, user) => {
+  CF.setUserInfo(user);
   dispatch({
     type: LOGIN_USER_SUCCESS,
     payload: user

@@ -8,12 +8,16 @@ import {
 } from 'react-native';
 import styles from "./ToDoListStyles";
 import _ from 'lodash';
+import CF from '../../commons/CF'
 import {Actions} from 'react-native-router-flux';
 import { connect } from 'react-redux';
+import moment from 'moment';
 import Navbar from '../../components/NavBar/NavBar'
-import { todosFetch, todosDelete, setTodoList, setSelectedTodoList } from '../../actions';
+import { todosFetch, todosDelete, setTodoList, setSelectedTodoList, completedToDo } from '../../actions';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import ToDoListItem from './ToDoListItem/ToDoListItem';
+import {getAllToDo} from '../../commons/Database';
+const ic_logout = require('../../images/NavBar/ic_logout.png');
 const img_nav_background = require('../../images/NavBar/img_navigation_bar.png');
 const ic_add = require('../../images/NavBar/ic_add.png');
 const icRemoveCircle = require('../../images/ToDoList/ic_done_circle.png');
@@ -21,11 +25,29 @@ const img_empty_list = require('../../images/NavBar/img_empty_list.png');
 class ToDoList extends Component {
     
     componentWillMount() {
-        this.props.todosFetch();
+        CF.checkNetwork((haveNetwork)=>{
+            console.log('aaa');
+            
+            if (haveNetwork) {
+                this.props.todosFetch();
+            } else {
+                getAllToDo((isSuccess,objects)=>{
+                    if (objects.length > 0) {
+                        var newListToDo = [];
+                        objects.forEach(element => {
+                            var newElement = JSON.parse(JSON.stringify(element));
+                            newElement.priority = JSON.parse(element.priority);
+                            newElement.datetime = moment(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+                            newListToDo.push(newElement)
+                        });
+                        this.props.setTodoList(newListToDo)
+                    } 
+                })
+            }
+        })
     }
 
     renderListItem({item}){
-        console.log(item);
         return (
             <ToDoListItem 
                 isSelected={item.isSelect}
@@ -43,6 +65,10 @@ class ToDoList extends Component {
         Actions.todoDetail();
     }
 
+    onLeftPressed(){
+        CF.logout();
+        Actions.auth();
+    }
 
     renderHiddenItem(data, rowMap) {
         const { cellButtonContainer, rightCellButton, rightCellButtonImage } = styles;
@@ -50,10 +76,7 @@ class ToDoList extends Component {
         return (
             <View style={cellButtonContainer}>
                 <TouchableOpacity onPress={() => {
-                    // setTimeout(() => {
-                    //     rowMap[data.index].closeRow();
-                    // }, 100),
-                        this.onRemove(data.item)
+                    this.onRemove(data.item)
                 }} style={rightCellButton}>
                     <Image
                         source={icRemoveCircle}
@@ -69,23 +92,25 @@ class ToDoList extends Component {
     }
 
     _onSelectedItem(item){
-      var tmpArray = this.props.listSelectedTodo;
-      if(!_.find(this.props.listSelectedTodo, item)) {
-        tmpArray.push(item)
-        this.props.setSelectedTodoList(tmpArray);
-      } else {
-        tmpArray.splice(_.findIndex(tmpArray, item),1)
-        this.props.setSelectedTodoList(tmpArray);
-      }
+        this.props.completedToDo(item);
 
-      var tmpArray = [...this.props.listToDo];
-      var index = _.findIndex(tmpArray, item);
+        var tmpArray = this.props.listSelectedTodo;
+        if(!_.find(this.props.listSelectedTodo, item)) {
+            tmpArray.push(item)
+            this.props.setSelectedTodoList(tmpArray);
+        } else {
+            tmpArray.splice(_.findIndex(tmpArray, item),1)
+            this.props.setSelectedTodoList(tmpArray);
+        }
 
-      item.isSelect = !item.isSelect;
-      tmpArray[index] = item;
-      console.log( this.props.listSelectedTodo);
-      
-      this.props.setTodoList(tmpArray);
+        var tmpArray = [...this.props.listToDo];
+        var index = _.findIndex(tmpArray, item);
+
+        item.isSelect = !item.isSelect;
+        tmpArray[index] = item;
+        console.log( this.props.listSelectedTodo);
+        
+        this.props.setTodoList(tmpArray);
 
     }
 
@@ -97,7 +122,10 @@ class ToDoList extends Component {
                 <Navbar
                     backgroundImg={img_nav_background}
                     hasRightBtn
+                    hasBackBtn
+                    customLeftImg={ic_logout}
                     customRightImg={ic_add}
+                    onLeftPressed={this.onLeftPressed}
                     onRightPressed={this.onRightButtonClick}
                     title="Danh sách nhắc việc"
                 />
@@ -140,4 +168,4 @@ const mapStateToProps = state => {
 };
 
 AppRegistry.registerComponent('ToDoList', () => ToDoList);
-export default connect(mapStateToProps, { todosFetch, todosDelete, setTodoList, setSelectedTodoList }) (ToDoList);
+export default connect(mapStateToProps, { todosFetch, todosDelete, setTodoList, setSelectedTodoList , completedToDo}) (ToDoList);

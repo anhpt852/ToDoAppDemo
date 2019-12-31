@@ -39,11 +39,13 @@ target 'ToDoApp' do
   pod 'Firebase/Database'
   pod 'Firebase/Auth'
 
+  pod 'RealmJS', :path => '../node_modules/realm'
+
   target 'ToDoAppTests' do
     inherit! :search_paths
     # Pods for testing
   end
-
+use_native_modules!
 end
 
 target 'ToDoApp-tvOS' do

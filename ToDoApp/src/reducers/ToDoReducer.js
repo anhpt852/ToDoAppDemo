@@ -4,14 +4,17 @@ import {
     TODO_CREATE,
     TODO_UPDATE,
     TODO_SETSELECTED_LIST,
-    SET_TODO_LIST
+    SET_TODO_LIST,
+    TODO_REMOVE
   } from '../actions/types';
   import _ from 'lodash';
+  import moment from 'moment';
+  import {addToDo, updateToDo, removeToDo} from '../commons/Database';
   const INITIAL_STATE = {
     todos: {},
     listToDo: [],
     listSelectedTodo: [],
-    currentSelectedToDo: {},
+
     title: '', 
     titleError: '', 
     content: '',
@@ -40,11 +43,10 @@ import {
             return INITIAL_STATE;
         case TODO_UPDATE:
             return INITIAL_STATE;
+        case TODO_REMOVE:
+            return INITIAL_STATE;
         case GET_LIST_TODO_SUCCESS:
-            const listToDo =_.map(action.payload, (val, uid) => {
-                return { ...val, uid };
-            });
-            return { ...state, error: INITIAL_STATE, todos: action.payload, listToDo};
+            return { ...state, INITIAL_STATE, todos: action.payload.todos, listToDo: action.payload.listToDo};
         default:
             return state;
     }

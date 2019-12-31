@@ -1,8 +1,8 @@
 import {
   AsyncStorage,
-  NetInfo,
   Platform
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo";
 // import {
 //   NavigationActions
 // } from '../containers/NavigationActionsClass'
@@ -18,26 +18,13 @@ function formatMoneyText(str){
 
 //  kiểm tra tình trạng mạng có hay chưa
 function checkNetwork(callback){
-  NetInfo.getConnectionInfo().then((connectionInfo) => {
+  NetInfo.fetch().then((connectionInfo) => {
     if(connectionInfo.type === 'none'){
       callback(false);
     } else {
       callback(true);
     }
   });
-  function handleFirstConnectivityChange(connectionInfo) {
-    NetInfo.removeEventListener(
-      'connectionChange',
-      handleFirstConnectivityChange,
-    );
-
-    if(connectionInfo.type === 'none'){
-      callback(false);
-    } else {
-      callback(true);
-    }
-  }
-  NetInfo.addEventListener('connectionChange', handleFirstConnectivityChange);
 }
 
 // kiểm tra engine nhận dạng có available hay không
@@ -212,7 +199,7 @@ function stopCountDown(){
 
 // logout
 function logout(){
-  this.setAccessToken('');
+  this.setUserInfo({});
 }
 
 exports.readData = readData;

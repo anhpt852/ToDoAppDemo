@@ -10,3 +10,4 @@ export const GET_LIST_TODO_SUCCESS = 'get_list_todo';
 export const TODO_ONCHANGETEXT = 'todo_onchangetext';
 export const TODO_CREATE ='create_todo';
 export const TODO_UPDATE ='update_todo';
+export const TODO_REMOVE = 'remove_todo';

@@ -67,7 +67,7 @@ class AuthScreen extends Component {
               style={topContainer}>
               <Image source={icLogo} style={imageLogo} resizeMode={'contain'}/>
               <Text style={textTitle}>To do</Text>
-              <Text style={textContent}>Let me remember for you</Text>
+              <Text style={textContent}>Remind everything for you</Text>
             </View>
 
             <View style={usernamePasswordView}>

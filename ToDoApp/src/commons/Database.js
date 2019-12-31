@@ -10,13 +10,14 @@ const successObject={
 
 const ToDoSchema = {
     name: 'ToDo',
-    primaryKey: 'id',
+    primaryKey: 'uid',
     properties: {
-        id:  'string',
+        uid:  'string',
         title: 'string',
         content: 'string',
         priority:'string?',
         datetime:'int',
+        status: {type: 'bool', default: false }
     }
 };
 
@@ -33,17 +34,20 @@ function toByteArray(str) {
 export const addToDo = (data, callback) => {
 	Realm.open({schema: [ToDoSchema],encryptionKey: toByteArray(Config.DatabaseKey)})
     .then(realm => {
+        console.log(data);
+        
         realm.write(() => {
             data.forEach(element => {
                 realm.create('ToDo', {    
-                    id:  element.id ? element.id.toString() : '',
+                    uid:  element.uid ? element.uid.toString() : '',
                     title: element.title ? element.title.toString() : '',
                     content: element.content ? element.content.toString() : '',
-                    priority: element.priority ? element.priority.toString() : '',
+                    priority: element.priority ?  JSON.stringify(element.priority) : '',
+                    status: element.status ?  element.status : false,
                     datetime: element.datetime ? moment(element.datetime).valueOf(): 0, // dùng để sắp xếp các bản ghi theo thời gian
                 },true);
             })
-            callback(true,realm.objects('ToDo').sorted('datetime', true))
+            callback(true,Array.from(realm.objects('ToDo').sorted('datetime', false)))
         });
     })
     .catch(error => {
@@ -52,41 +56,40 @@ export const addToDo = (data, callback) => {
 };
 
 // Cập nhật thông tin chi tiết ghi chú
-export const updateToDo = (id, data, callback) => {
+export const updateToDo = (data, callback) => {
 	Realm.open({schema: [ToDoSchema],encryptionKey: toByteArray(Config.DatabaseKey)})
     .then(realm => {
         realm.write(() => {
-
-            if(chitiet){
+            console.log('aaa',moment(data.datetime).valueOf());
+            
+            if(data){
                 realm.create('ToDo', {
-                    id:  id.toString() , 
+                    uid:  data.uid ? data.uid.toString() : '', 
                     title: data.title ? data.title.toString() : '',
                     content: data.content ? data.content.toString() : '',
-                    priority: data.priority ? data.priority.toString() : '',
+                    priority: data.priority ? JSON.stringify(data.priority) : '',
+                    status: data.status ?  data.status : '',
                     datetime: data.datetime ? moment(data.datetime).valueOf(): 0,
                 }, true);
-                callback(true,realm.objectForPrimaryKey('ToDo', id.toString()))
+                callback(true,Array.from(realm.objects('ToDo').sorted('datetime', false)))
             } else {
                 callback(false,'Dữ liệu lưu không hợp lệ');
             }      
         })
     }).catch(error => {
         callback(false,(_.toString(error)));
-    }).catch(error => {
-        callback(false,(_.toString(error)));
     });
 };
 
 // Xoá ghi chú
-export const removeToDo = (id, callback) => {
+export const removeToDo = (uid, callback) => {
     Realm.open({schema: [ToDoSchema],encryptionKey: toByteArray(Config.DatabaseKey)})
     .then(realm => {
         realm.write(() => {
-            realm.delete(realm.objectForPrimaryKey('ToDo', id.toString()));
-            callback(successObject);
-        }).catch(error => {
-            callback(false,(_.toString(error)))
-        });
+            realm.delete(realm.objectForPrimaryKey('ToDo', uid.toString()));
+
+            callback(true,Array.from(realm.objects('ToDo').sorted('datetime', false)))
+        })
     })
     .catch(error => {
         callback(false,(_.toString(error)));
@@ -95,28 +98,27 @@ export const removeToDo = (id, callback) => {
 
 // Xoá tất cả ghi chú đã lưu
 
-export const removeAllToDo = (callback) => {
-	Realm.open({schema: [ToDoSchema],encryptionKey: toByteArray(Config.DatabaseKey)})
-    .then(realm => {
-        realm.write(() => {
-            let allToDos = realm.objects('ToDo');
-            realm.delete(allToDos);
-            callback(true);
-        }).catch(error => {
-            callback(false)
-        });
-    })
-    .catch(error => {
-        callback(false,(_.toString(error)));
-    });
-};
+// export const removeAllToDo = (callback) => {
+// 	Realm.open({schema: [ToDoSchema],encryptionKey: toByteArray(Config.DatabaseKey)})
+//     .then(realm => {
+//         realm.write(() => {
+//             let allToDos = realm.objects('ToDo');
+//             realm.delete(allToDos);
+//             callback(true);
+//         }).catch(error => {
+//             callback(false)
+//         });
+//     })
+//     .catch(error => {
+//         callback(false,(_.toString(error)));
+//     });
+// };
 
 // Lấy tất cả ghi chú
 export const getAllToDo = (callback) => {
 	Realm.open({schema: [ToDoSchema],encryptionKey: toByteArray(Config.DatabaseKey)})
     .then(realm => {
-        console.log('hereee');
-        let allToDos = realm.objects('ToDo').sorted('thoigiantimestamp', true);
+        let allToDos = Array.from(realm.objects('ToDo').sorted('datetime', false));
         callback(true,allToDos);
     })
     .catch(error => {
@@ -125,12 +127,10 @@ export const getAllToDo = (callback) => {
 };
 
 // Lấy thông tin vi phạm bằng id
-export const getToDoById = (id, callback) => {
+export const getToDoById = (uid, callback) => {
 	Realm.open({schema: [ToDoSchema],encryptionKey: toByteArray(Config.DatabaseKey)})
     .then(realm => {
-        
-        
-        const todo = realm.objects('ToDo').filtered('id == $0', id.toString());
+        const todo = realm.objects('ToDo').filtered('uid == $0', uid.toString());
         callback(true,todo[0]);
     })
     .catch(error => {
