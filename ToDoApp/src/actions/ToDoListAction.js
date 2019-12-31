@@ -137,7 +137,7 @@ export const completedToDo = (item) => {
     CF.checkNetwork((haveNetwork)=>{
       if (haveNetwork) {
         firebase.database().ref(`/users/${currentUser.uid}/todos/${item.uid}`)
-        .set({ status: !item.status })
+        .set({ title: item.title, content : item.content, priority: item.priority, datetime: item.datetime, status: !item.status , uid: item.uid  })
         .then(() => {
           updateToDo({ title: item.title, content : item.content, priority: item.priority, datetime: item.datetime, status: !item.status , uid: item.uid },
             (isSuccess,object)=>{
