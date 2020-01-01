@@ -98,12 +98,13 @@ class Routes extends Component {
           <Lightbox key="modal" hideNavBar>
             <Stack key="root" hideNavBar>
               
-              <Scene key="auth" initial = {!this.state.isUserLogin}>
-                <Scene key="login" component={AuthScreen} hideNavBar/>
+              <Scene key="auth"  initial = {!this.state.isUserLogin}>
+                <Scene key="login"  swipeEnabled={false} animationEnabled={false} component={AuthScreen} hideNavBar/>
               </Scene>
   
               <Scene key="main" initial = {this.state.isUserLogin}>
                 <Scene
+                  type="reset"
                   onRight={() => Actions.todoDetail()}
                   hideNavBar
                   key="todoList"

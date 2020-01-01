@@ -9,8 +9,10 @@ import {
     TODO_REMOVE,
     TODO_ONCHANGETEXT,
     TODO_SETSELECTED_LIST,
-    GET_LIST_TODO_SUCCESS,
     SET_TODO_LIST,
+    SHOW_LOADING,
+    HIDE_LOADING,
+    GET_LIST_TODO_SUCCESS
 } from './types';
 import _ from 'lodash';
 import CF from '../commons/CF'
@@ -41,7 +43,7 @@ export const todosFetch = () => {
     const { currentUser } = firebase.auth();
   
     return (dispatch) => {
-      dispatch({ type: GET_LIST_TODO });
+      dispatch({ type: SHOW_LOADING });
       firebase.database().ref(`/users/${currentUser.uid}/todos`)
         .on('value', snapshot => {
           console.log(snapshot.val());
@@ -63,8 +65,9 @@ export const todosFetch = () => {
                         });
                         console.log(newListToDo);
                         dispatch({ type: GET_LIST_TODO_SUCCESS, payload: {todos: snapshot.val() ,listToDo: newListToDo} });
+                        
                     } else {
-                        dispatch({ type: GET_LIST_TODO_SUCCESS, payload: {todos: snapshot.val() ,listToDo: listToDo} });
+                      dispatch({ type: GET_LIST_TODO_SUCCESS, payload: {todos: snapshot.val() ,listToDo: listToDo} });
                     }
                 }
             )
@@ -76,13 +79,16 @@ export const todosCreate = ({ title, content, priority, datetime }) => {
     const { currentUser } = firebase.auth();
 
     return (dispatch) => {
+      dispatch({ type: SHOW_LOADING });
       CF.checkNetwork((haveNetwork)=>{
         if (haveNetwork) {
           firebase.database().ref(`/users/${currentUser.uid}/todos`)
           .push({ title, content, priority, datetime })
           .then(() => {       
-            dispatch({ type: TODO_CREATE});  
-            Actions.todoList({ type: 'reset' });
+            dispatch({ type: TODO_CREATE});
+            setTimeout(() => {
+              Actions.todoList({ type: 'reset' });
+            }, 200);
           });
         } else {
           addToDo([{ title, content, priority, datetime, syncStatus: 'create_new', uid: moment(moment(datetime).format('YYYY-MM-DD[T]HH:mm:ss')).valueOf()}],(isSucess,object)=>{
@@ -103,6 +109,7 @@ export const todosCreate = ({ title, content, priority, datetime }) => {
     const { currentUser } = firebase.auth();
   
     return (dispatch) => {
+      dispatch({ type: SHOW_LOADING });
       CF.checkNetwork((haveNetwork)=>{
         if (haveNetwork) {
           firebase.database().ref(`/users/${currentUser.uid}/todos/${uid}`)
@@ -156,6 +163,7 @@ export const todosDelete = ({title, content, priority, datetime, status, uid}) =
     const { currentUser } = firebase.auth();
   
     return (dispatch) => {
+      dispatch({ type: SHOW_LOADING });
       CF.checkNetwork((haveNetwork)=>{
         if (haveNetwork) {
           firebase.database().ref(`/users/${currentUser.uid}/todos/${uid}`)

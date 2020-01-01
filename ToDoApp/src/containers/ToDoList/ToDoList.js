@@ -25,7 +25,7 @@ const icRemoveCircle = require('../../images/ToDoList/ic_done_circle.png');
 const img_empty_list = require('../../images/NavBar/img_empty_list.png');
 class ToDoList extends Component {
     
-    componentWillMount() {
+    componentWillMount(){
         CF.checkNetwork((haveNetwork)=>{
             console.log('aaa');
             
@@ -52,6 +52,35 @@ class ToDoList extends Component {
         })
     }
 
+    // componentWillReceiveProps(nextProps) {
+    //     if (nextProps.type === 'reset'){
+    //         CF.checkNetwork((haveNetwork)=>{
+    //             console.log('aaa');
+                
+    //             if (haveNetwork) {
+    //                 this.props.todosFetch();
+    //             } else {
+    //                 getAllToDo((isSuccess,objects)=>{
+    //                     console.log('aa');
+                        
+    //                     if (objects.length > 0) {
+    //                         var newListToDo = [];
+    //                         objects.forEach(element => {
+    //                             var newElement = JSON.parse(JSON.stringify(element));
+    //                             newElement.priority = JSON.parse(element.priority);
+    //                             newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+    //                             if(element.syncStatus !== 'delete') {
+    //                                 newListToDo.push(newElement)
+    //                               }
+    //                         });
+    //                         this.props.setTodoList(newListToDo)
+    //                     } 
+    //                 })
+    //             }
+    //         })
+    //     }        
+    // }
+
     renderListItem({item}){
         return (
             <ToDoListItem 
@@ -71,7 +100,7 @@ class ToDoList extends Component {
 
     onLeftPressed(){
         CF.logout();
-        Actions.auth();
+        Actions.auth({type:'reset'});
     }
 
     renderHiddenItem(data, rowMap) {
@@ -172,7 +201,7 @@ class ToDoList extends Component {
 
 const mapStateToProps = state => {
     const {listToDo, listSelectedTodo, loading} = state.todo;
-    return { listToDo, listSelectedTodo };
+    return { listToDo, listSelectedTodo, loading };
 };
 
 AppRegistry.registerComponent('ToDoList', () => ToDoList);

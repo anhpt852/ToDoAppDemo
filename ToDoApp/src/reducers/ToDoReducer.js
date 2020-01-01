@@ -1,7 +1,7 @@
 import {
     TODO_ONCHANGETEXT,
-    GET_LIST_TODO,
-    GET_LIST_TODO_FAIL,
+    SHOW_LOADING,
+    HIDE_LOADING,
     GET_LIST_TODO_SUCCESS,
     TODO_CREATE,
     TODO_UPDATE,
@@ -46,12 +46,12 @@ import {
             return { ...state, INITIAL_STATE, listToDo: action.payload};
         case TODO_REMOVE:
             return { ...state, INITIAL_STATE, listToDo: action.payload};
-        case GET_LIST_TODO:
-            return { ...state, loading: true }
+        case SHOW_LOADING:
+            return { ...state, loading: true };
         case GET_LIST_TODO_SUCCESS:
-            return { ...state, INITIAL_STATE, todos: action.payload.todos, loading: false, listToDo: action.payload.listToDo};
-        case GET_LIST_TODO_FAIL:
-            return { ...state, loading: false }
+            return { ...state, INITIAL_STATE, loading: false, todos: action.payload.todos, listToDo: action.payload.listToDo};
+        case HIDE_LOADING:
+            return { ...state, loading: false };
         default:
             return state;
     }

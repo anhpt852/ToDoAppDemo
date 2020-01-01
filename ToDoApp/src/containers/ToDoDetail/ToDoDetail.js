@@ -115,7 +115,7 @@ class ToDoDetail extends Component {
             <View style={container}>
                 <Navbar
                     hasBackBtn
-                    title="Chi tiết nhắc việc"
+                    title={this.props.item ? "Chi tiết nhắc việc" : "Tạo nhắc việc"}
                     hasRightBtn = {this.props.item ? true : false}
                     customRightImg={ic_remove_todo}
                     backgroundImg={img_nav_background}

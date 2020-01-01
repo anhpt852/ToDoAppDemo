@@ -140,3 +140,13 @@ export const getToDoById = (uid, callback) => {
     });
 };
 
+export const removeAll = () => {
+    Realm.open({schema: [ToDoSchema],encryptionKey: toByteArray(Config.DatabaseKey)})
+    .then(realm => {
+        realm.write(() => {
+            realm.deleteAll()
+        })
+    }).catch(error => {
+        callback(false,_.toString(error));
+    });
+}

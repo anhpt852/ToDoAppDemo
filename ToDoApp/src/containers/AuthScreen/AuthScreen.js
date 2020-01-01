@@ -11,7 +11,7 @@ import {
 
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { emailChanged, passwordChanged, loginUser } from '../../actions';
+import { emailChanged, passwordChanged, loginUser,registerUser ,authModeChanged } from '../../actions';
 import Loader from '../../components/Loader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import CommonTextField from '../../components/TextField/CommonTextField';
@@ -35,9 +35,11 @@ class AuthScreen extends Component {
 
   actionClick() {
     const { email, password } = this.props;
-
-    this.props.loginUser({ email, password });
-
+    if (this.props.isLogin ) {
+      this.props.loginUser({ email, password });
+    } else {
+      this.props.registerUser({ email, password });
+    }
   }
 
 
@@ -49,7 +51,7 @@ class AuthScreen extends Component {
     const { container, content, topContainer, imageLogo,
       textTitle, textContent, usernamePasswordView, loginButton,
       headerContainer, headerTitle, headerSubtitle,
-      scrollView, loginButtonText } = styles;
+      scrollView, loginButtonText, btnRegister, registerText, forgotPassInline} = styles;
 
     return (
       <View style={container}>
@@ -58,6 +60,8 @@ class AuthScreen extends Component {
           loading={this.props.loading} />
         {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}> */}
         <KeyboardAwareScrollView
+          enableOnAndroid={true}
+          enableAutomaticScroll={(Platform.OS === 'ios')}
           contentContainerStyle={scrollView}
           resetScrollToCoords={{ x: 0, y: 0 }}
           scrollEnabled={true}>
@@ -73,7 +77,7 @@ class AuthScreen extends Component {
             <View style={usernamePasswordView}>
               <View style={headerContainer}>
                 <Text style={headerTitle}>Chào mừng</Text>
-                <Text style={headerSubtitle}>Đăng nhập</Text>
+                <Text style={headerSubtitle}>{this.props.isLogin ? 'Đăng nhập' : 'Đăng kí'}</Text>
               </View>
               <CommonTextField name="username"
                 placeholder='Nhập email'
@@ -91,14 +95,26 @@ class AuthScreen extends Component {
                 imageLook={icLook}
               />
             </View>
-
             <TouchableOpacity
               onPress={this.actionClick.bind(this)}>
               <View style={loginButton}>
                 <Text style={[loginButtonText]}>
-                  Đăng nhập
+                {this.props.isLogin ? 'Đăng nhập' : 'Đăng kí'}
                 </Text>
               </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={()=>this.props.authModeChanged(!this.props.isLogin)}
+              style={btnRegister}
+            >
+              {this.props.isLogin ? 
+              <Text style={registerText}>
+                Chưa có tài khoản? <Text style={forgotPassInline}>Đăng kí</Text>
+              </Text>
+              :
+              <Text style={forgotPassInline}>
+                Quay lại đăng nhập 
+              </Text>}
             </TouchableOpacity>
           </View>
         </KeyboardAwareScrollView>
@@ -109,10 +125,10 @@ class AuthScreen extends Component {
 }
 
 const mapStateToProps = state => {
-  const { email, errorEmail,  password, passwordError, loading} = state.auth;
+  const { email, errorEmail,  password, passwordError, loading, isLogin} = state.auth;
 
-  return { email, errorEmail,  password, passwordError, loading};
+  return { email, errorEmail,  password, passwordError, loading, isLogin};
 };
 
 AppRegistry.registerComponent('AuthScreen', () => AuthScreen);
-export default connect(mapStateToProps, { emailChanged, passwordChanged, loginUser }) (AuthScreen);
+export default connect(mapStateToProps, { emailChanged, passwordChanged, loginUser,registerUser ,authModeChanged }) (AuthScreen);

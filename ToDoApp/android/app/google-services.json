@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:306339160820:android:3f4b8dde2d7e466d05b4a1",
+        "mobilesdk_app_id": "1:306339160820:android:bd39f138713a323905b4a1",
         "android_client_info": {
-          "package_name": "com.anhpt.ToDoApp"
+          "package_name": "com.todoapp"
         }
       },
       "oauth_client": [
@@ -32,10 +32,10 @@
               "client_type": 3
             },
             {
-              "client_id": "306339160820-gfcvalreaab2gvbpm682jg1l16i7b4ci.apps.googleusercontent.com",
+              "client_id": "306339160820-69flrj1l7vj7pmp683jofphtnktrr7to.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "org.reactjs.native.example.ToDoApp"
+                "bundle_id": "com.anhpt.ToDoApp"
               }
             }
           ]

@@ -4,15 +4,18 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+
+import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 import io.realm.react.RealmReactPackage;
-import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.zyu.ReactNativeWheelPickerPackage;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-
+import io.invertase.firebase.database.RNFirebaseDatabasePackage;
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost =
@@ -28,7 +31,10 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
-          return packages;
+            packages.add(new ReactNativeWheelPickerPackage());
+            packages.add(new RNFirebaseDatabasePackage());
+            packages.add(new RNFirebaseAuthPackage());
+            return packages;
         }
 
         @Override

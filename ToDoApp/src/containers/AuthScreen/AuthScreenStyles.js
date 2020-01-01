@@ -23,7 +23,7 @@ import {
     },
   
     scrollView: {
-      flex: 1,
+      flexGrow: 1  
     },
   
     topContainer: {
@@ -127,6 +127,8 @@ import {
     loginButtonText: {
       color: 'white',
       fontFamily:'Helvetica Neue',
+      fontWeight:'bold',
+      fontSize: 18,
     },
   
     registerView: {
@@ -218,6 +220,14 @@ import {
       fontSize: 18,
       color:'#97979B',
       fontFamily:'Helvetica Neue',
-    }
+      fontWeight:'800'
+    },
   
+    errorText:{
+      width:'100%',
+      textAlign: 'center',
+      color: '#FF424C',
+      fontSize: 20,
+      marginBottom: 10,
+    }
   });
