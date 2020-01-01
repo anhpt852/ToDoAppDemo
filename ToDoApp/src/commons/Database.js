@@ -15,6 +15,7 @@ const ToDoSchema = {
         uid:  'string',
         title: 'string',
         content: 'string',
+        syncStatus: {type: 'string', default: 'none' },
         priority:'string?',
         datetime:'int',
         status: {type: 'bool', default: false }
@@ -44,14 +45,15 @@ export const addToDo = (data, callback) => {
                     content: element.content ? element.content.toString() : '',
                     priority: element.priority ?  JSON.stringify(element.priority) : '',
                     status: element.status ?  element.status : false,
-                    datetime: element.datetime ? moment(element.datetime).valueOf(): 0, // dùng để sắp xếp các bản ghi theo thời gian
+                    syncStatus: (!element.syncStatus || element.syncStatus) ?  element.syncStatus : 'none',
+                    datetime: element.datetime ? moment(element.datetime).utc().valueOf(): 0, // dùng để sắp xếp các bản ghi theo thời gian
                 },true);
             })
-            callback(true,Array.from(realm.objects('ToDo').sorted('datetime', false)))
+            if (callback) callback(true,Array.from(realm.objects('ToDo').sorted('datetime', false)))
         });
     })
     .catch(error => {
-        callback(false,_.toString(error))
+        if (callback) callback(false,_.toString(error))
     });
 };
 
@@ -68,12 +70,13 @@ export const updateToDo = (data, callback) => {
                     title: data.title ? data.title.toString() : '',
                     content: data.content ? data.content.toString() : '',
                     priority: data.priority ? JSON.stringify(data.priority) : '',
-                    status: data.status ?  data.status : '',
-                    datetime: data.datetime ? moment(data.datetime).valueOf(): 0,
+                    status: data.status ?  data.status : false,
+                    syncStatus: data.syncStatus ?  data.syncStatus : 'none',
+                    datetime: data.datetime ? moment(data.datetime).utc().valueOf(): 0,
                 }, true);
-                callback(true,Array.from(realm.objects('ToDo').sorted('datetime', false)))
+                if (callback) callback(true,Array.from(realm.objects('ToDo').sorted('datetime', false)))
             } else {
-                callback(false,'Dữ liệu lưu không hợp lệ');
+                if (callback)callback(false,'Dữ liệu lưu không hợp lệ');
             }      
         })
     }).catch(error => {
@@ -98,21 +101,20 @@ export const removeToDo = (uid, callback) => {
 
 // Xoá tất cả ghi chú đã lưu
 
-// export const removeAllToDo = (callback) => {
-// 	Realm.open({schema: [ToDoSchema],encryptionKey: toByteArray(Config.DatabaseKey)})
-//     .then(realm => {
-//         realm.write(() => {
-//             let allToDos = realm.objects('ToDo');
-//             realm.delete(allToDos);
-//             callback(true);
-//         }).catch(error => {
-//             callback(false)
-//         });
-//     })
-//     .catch(error => {
-//         callback(false,(_.toString(error)));
-//     });
-// };
+export const removeListToDo = (data,callback) => {
+	Realm.open({schema: [ToDoSchema],encryptionKey: toByteArray(Config.DatabaseKey)})
+    .then(realm => {
+        realm.write(() => {
+            data.forEach(element => {
+                realm.delete(realm.objectForPrimaryKey('ToDo', element.uid.toString()));
+            })
+            if (callback) callback(true,Array.from(realm.objects('ToDo').sorted('datetime', false)))
+        })
+    })
+    .catch(error => {
+        if (callback) callback(false,(_.toString(error)));
+    });
+};
 
 // Lấy tất cả ghi chú
 export const getAllToDo = (callback) => {

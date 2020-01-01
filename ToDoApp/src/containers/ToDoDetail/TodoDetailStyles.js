@@ -67,6 +67,7 @@ export default StyleSheet.create({
         marginHorizontal: 10,
     },
 
+    
     saveButtonTitle: {
         fontSize: 18, 
         color: 'white', 

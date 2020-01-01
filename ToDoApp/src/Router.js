@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
+import firebase from 'react-native-firebase';
 import {Stack,Scene, Router, Actions, Lightbox, Overlay } from 'react-native-router-flux';
 import AuthScreen from './containers/AuthScreen/AuthScreen';
 import ToDoList from './containers/ToDoList/ToDoList';
 import ToDoDetail from './containers/ToDoDetail/ToDoDetail';
 import WheelPickerWithObjectInput from './components/TextField/WheelPickerWithObjectInput';
+import {addToDo, getAllToDo, removeListToDo} from './commons/Database';
 import CF from './commons/CF'
 import _ from 'lodash';
-
+import moment from 'moment';
 class Routes extends Component {
 
   constructor(props) {
@@ -23,11 +25,72 @@ class Routes extends Component {
       if (_.isEmpty(userInfo)) {
         this.setState({isUserLogin:false})
       } else {
-        this.setState({isUserLogin:true})
+        CF.checkNetwork((haveNetwork)=>{
+          if (haveNetwork) {
+            this.syncDataWhenHaveNetwork()
+          } else {
+            this.setState({isUserLogin:true})
+          }
+        })
       }
     })
   }
 
+  syncDataWhenHaveNetwork(){
+    const { currentUser } = firebase.auth();
+    getAllToDo((isSuccess,objects)=>{
+      if (objects.length > 0) {
+          var newListToDo = [];
+          var updateItems = [];
+          var createdItems = [];
+          var removedItems = [];
+
+          objects.forEach(element => {
+            var newElement = JSON.parse(JSON.stringify(element));
+            newElement.priority = JSON.parse(element.priority);
+            newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+            if(newElement.syncStatus === 'edit'){
+              updateItems.push({...newElement, syncStatus:'none'});
+            } else if (newElement.syncStatus === 'delete'){
+              removedItems.push(newElement);
+            } else if (newElement.syncStatus === 'create_new'){
+              createdItems.push({...newElement,uid: null, syncStatus:'none'});
+            }
+
+          });
+          console.log(newListToDo);
+          
+          var updates = {};
+          var tmp= [];
+
+          createdItems.map(item => {
+            var newPostKey = firebase.database().ref(`/users/${currentUser.uid}/todos`).push().key;
+            updates[newPostKey] = item;
+            tmp.push(item)
+          });
+
+          updateItems.map(item => {
+            updates[item.uid] = item;
+            tmp.push(item)
+          });
+
+          removedItems.map(item => {
+            updates[item.uid] = null;
+          });
+
+          if(_.isEmpty(updates)){
+            this.setState({isUserLogin:true})
+          } else {
+            firebase.database().ref(`/users/${currentUser.uid}/todos`).update(updates).then(()=>{
+              addToDo(tmp,null);
+              removeListToDo(removedItems,null);
+              this.setState({isUserLogin:true})
+            });
+          }
+          
+      } 
+    })
+  }
   render(){
     return (
       <Router sceneStyle={{ }}>

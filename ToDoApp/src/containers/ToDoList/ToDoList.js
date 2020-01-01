@@ -13,10 +13,11 @@ import {Actions} from 'react-native-router-flux';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import Navbar from '../../components/NavBar/NavBar'
-import { todosFetch, todosDelete, setTodoList, setSelectedTodoList, completedToDo } from '../../actions';
+import { todosFetch, todosDelete, setTodoList, setSelectedTodoList, todosUpdate } from '../../actions';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import ToDoListItem from './ToDoListItem/ToDoListItem';
 import {getAllToDo} from '../../commons/Database';
+import Loader from '../../components/Loader';
 const ic_logout = require('../../images/NavBar/ic_logout.png');
 const img_nav_background = require('../../images/NavBar/img_navigation_bar.png');
 const ic_add = require('../../images/NavBar/ic_add.png');
@@ -32,13 +33,17 @@ class ToDoList extends Component {
                 this.props.todosFetch();
             } else {
                 getAllToDo((isSuccess,objects)=>{
+                    console.log('aa');
+                    
                     if (objects.length > 0) {
                         var newListToDo = [];
                         objects.forEach(element => {
                             var newElement = JSON.parse(JSON.stringify(element));
                             newElement.priority = JSON.parse(element.priority);
-                            newElement.datetime = moment(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
-                            newListToDo.push(newElement)
+                            newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+                            if(element.syncStatus !== 'delete') {
+                                newListToDo.push(newElement)
+                              }
                         });
                         this.props.setTodoList(newListToDo)
                     } 
@@ -50,11 +55,10 @@ class ToDoList extends Component {
     renderListItem({item}){
         return (
             <ToDoListItem 
-                isSelected={item.isSelect}
+                isSelected={item.status}
                 item={item} 
                 onPress={()=>{Actions.todoDetail({item})}}
                 onSelectedItem={()=>{
-                    console.log('aaaa');
                     this._onSelectedItem(item)
                 }}
             />
@@ -88,27 +92,28 @@ class ToDoList extends Component {
     }
 
     onRemove(item){
-        this.props.todosDelete({ uid: item.uid});
+        const {title, content, priority, datetime, status, uid} =  item
+        this.props.todosDelete({title, content, priority, datetime, status, uid});
     }
 
     _onSelectedItem(item){
-        this.props.completedToDo(item);
+        const {title, content, priority, datetime, status, uid} =  item
+        this.props.todosUpdate({title, content, priority, datetime, status:!status, uid});
 
-        var tmpArray = this.props.listSelectedTodo;
-        if(!_.find(this.props.listSelectedTodo, item)) {
-            tmpArray.push(item)
-            this.props.setSelectedTodoList(tmpArray);
-        } else {
-            tmpArray.splice(_.findIndex(tmpArray, item),1)
-            this.props.setSelectedTodoList(tmpArray);
-        }
+        // var tmpArray = this.props.listSelectedTodo;
+        // if(!_.find(this.props.listSelectedTodo, item)) {
+        //     tmpArray.push(item)
+        //     this.props.setSelectedTodoList(tmpArray);
+        // } else {
+        //     tmpArray.splice(_.findIndex(tmpArray, item),1)
+        //     this.props.setSelectedTodoList(tmpArray);
+        // }
 
         var tmpArray = [...this.props.listToDo];
         var index = _.findIndex(tmpArray, item);
 
-        item.isSelect = !item.isSelect;
+        item.status = !item.status;
         tmpArray[index] = item;
-        console.log( this.props.listSelectedTodo);
         
         this.props.setTodoList(tmpArray);
 
@@ -119,6 +124,9 @@ class ToDoList extends Component {
         
         return (
             <View style={container}>
+                <Loader
+                    onRequestClose={this.onRequestClose}
+                    loading={this.props.loading} />
                 <Navbar
                     backgroundImg={img_nav_background}
                     hasRightBtn
@@ -163,9 +171,9 @@ class ToDoList extends Component {
 
 
 const mapStateToProps = state => {
-    const {listToDo, listSelectedTodo} = state.todo;
+    const {listToDo, listSelectedTodo, loading} = state.todo;
     return { listToDo, listSelectedTodo };
 };
 
 AppRegistry.registerComponent('ToDoList', () => ToDoList);
-export default connect(mapStateToProps, { todosFetch, todosDelete, setTodoList, setSelectedTodoList , completedToDo}) (ToDoList);
+export default connect(mapStateToProps, { todosFetch, todosDelete, setTodoList, setSelectedTodoList , todosUpdate}) (ToDoList);

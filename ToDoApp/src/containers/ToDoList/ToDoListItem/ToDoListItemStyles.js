@@ -35,7 +35,7 @@ export default StyleSheet.create({
     },
 
     leftContent:{
-        width: width - 200,
+        width: width - 180,
         marginVertical: 8,
     },
 

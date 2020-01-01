@@ -41,6 +41,7 @@ export const todosFetch = () => {
     const { currentUser } = firebase.auth();
   
     return (dispatch) => {
+      dispatch({ type: GET_LIST_TODO });
       firebase.database().ref(`/users/${currentUser.uid}/todos`)
         .on('value', snapshot => {
           console.log(snapshot.val());
@@ -55,8 +56,10 @@ export const todosFetch = () => {
                         object.forEach(element => {
                             var newElement = JSON.parse(JSON.stringify(element));
                             newElement.priority = JSON.parse(element.priority);
-                            newElement.datetime = moment(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
-                            newListToDo.push(newElement)
+                            newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+                            if(element.syncStatus !== 'delete') {
+                              newListToDo.push(newElement)
+                            }
                         });
                         console.log(newListToDo);
                         dispatch({ type: GET_LIST_TODO_SUCCESS, payload: {todos: snapshot.val() ,listToDo: newListToDo} });
@@ -82,108 +85,74 @@ export const todosCreate = ({ title, content, priority, datetime }) => {
             Actions.todoList({ type: 'reset' });
           });
         } else {
-          addToDo([{ title, content, priority, datetime, uid: moment(moment(datetime).format('YYYY-MM-DD[T]HH:mm:ss')).valueOf()}],(isSucess,object)=>{
+          addToDo([{ title, content, priority, datetime, syncStatus: 'create_new', uid: moment(moment(datetime).format('YYYY-MM-DD[T]HH:mm:ss')).valueOf()}],(isSucess,object)=>{
             if(isSucess){
-              Alert.alert('Tạo nhắc việc thành công');
+              dispatch({ type: TODO_CREATE});
+              Actions.todoList({ type: 'reset' });
             } else {
               Alert.alert('Tạo nhắc việc không thành công');
             }
-            dispatch({ type: TODO_CREATE});
-            Actions.todoList({ type: 'reset' });
+            
           })
         }
       })
     };
   };
 
-  export const todosUpdate = ({ title, content, priority, datetime , uid }) => {
+  export const todosUpdate = ({ title, content, priority, datetime, status , uid }) => {
     const { currentUser } = firebase.auth();
   
     return (dispatch) => {
       CF.checkNetwork((haveNetwork)=>{
         if (haveNetwork) {
           firebase.database().ref(`/users/${currentUser.uid}/todos/${uid}`)
-          .set({ title, content, priority, datetime , uid })
+          .update({ title, content, priority, datetime , status, uid })
           .then(() => {
-            updateToDo({ title, content, priority, datetime , uid },
-              (isSuccess,object)=>{
+            updateToDo({ title, content, priority, datetime , status, uid },
+              (isSuccess,objects)=>{
                 if(isSuccess){
-                  Alert.alert('Cập nhật nhắc việc thành công');
+                  var newListToDo = [];
+                  objects.forEach(element => {
+                      var newElement = JSON.parse(JSON.stringify(element));
+                      newElement.priority = JSON.parse(element.priority);
+                      newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+                      if(element.syncStatus !== 'delete') {
+                        newListToDo.push(newElement)
+                      }
+                  });
+                  dispatch({ type: TODO_UPDATE, payload: newListToDo});
+                  Actions.todoList({ type: 'reset' });
                 } else {
                   Alert.alert('Cập nhật nhắc việc không thành công');
                 }
-                dispatch({ type: TODO_UPDATE});
-                Actions.todoList({ type: 'reset' });
               })
           });
         } else {
-          updateToDo({ title, content, priority, datetime , uid },(isSucess,object)=>{
+          updateToDo({ title, content, priority, datetime, status, syncStatus: 'edit', uid },(isSucess,objects)=>{
             if(isSucess){
-              Alert.alert('Cập nhật nhắc việc thành công');
+              // Alert.alert('Cập nhật nhắc việc thành công');
+              var newListToDo = [];
+              objects.forEach(element => {
+                  var newElement = JSON.parse(JSON.stringify(element));
+                  newElement.priority = JSON.parse(element.priority);
+                  newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+                  if(element.syncStatus !== 'delete') {
+                    newListToDo.push(newElement)
+                  }
+              });
+              dispatch({ type: TODO_UPDATE, payload: newListToDo});
+              Actions.todoList({ type: 'reset' });
             } else {
               Alert.alert('Cập nhật nhắc việc không thành công');
             } 
-            dispatch({ type: TODO_UPDATE});
-            Actions.todoList({ type: 'reset' });
+            
           })
         }
       })
     };
 };
-  
-export const completedToDo = (item) => {
-  const { currentUser } = firebase.auth();
-  return (dispatch) => {
-    CF.checkNetwork((haveNetwork)=>{
-      if (haveNetwork) {
-        firebase.database().ref(`/users/${currentUser.uid}/todos/${item.uid}`)
-        .set({ title: item.title, content : item.content, priority: item.priority, datetime: item.datetime, status: !item.status , uid: item.uid  })
-        .then(() => {
-          updateToDo({ title: item.title, content : item.content, priority: item.priority, datetime: item.datetime, status: !item.status , uid: item.uid },
-            (isSuccess,object)=>{
-              if(isSuccess){
-                Alert.alert('Cập nhật nhắc việc thành công');
-              } else {
-                Alert.alert('Cập nhật nhắc việc không thành công');
-              }
-              var newListToDo = [];
-              object.forEach(element => {
-                  var newElement = JSON.parse(JSON.stringify(element));
-                  newElement.priority = JSON.parse(element.priority);
-                  newElement.datetime = moment(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
-                  newListToDo.push(newElement)
-              });
-              dispatch({
-                type: SET_TODO_LIST,
-                payload: newListToDo
-              });
-            })
-        });
-      } else {
-        updateToDo({ title: item.title, content : item.content, priority: item.priority, datetime: item.datetime, status: !item.status , uid: item.uid },(isSucess,object)=>{
-          if(isSucess){
-            Alert.alert('Cập nhật nhắc việc thành công');
-          } else {
-            Alert.alert('Cập nhật nhắc việc không thành công');
-          } 
-          var newListToDo = [];
-              object.forEach(element => {
-                  var newElement = JSON.parse(JSON.stringify(element));
-                  newElement.priority = JSON.parse(element.priority);
-                  newElement.datetime = moment(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
-                  newListToDo.push(newElement)
-              });
-              dispatch({
-                type: SET_TODO_LIST,
-                payload: newListToDo
-              });
-        })
-      }
-    })
-  };
-}
 
-export const todosDelete = ({ uid }) => {
+export const todosDelete = ({title, content, priority, datetime, status, uid}) => {
     const { currentUser } = firebase.auth();
   
     return (dispatch) => {
@@ -193,27 +162,62 @@ export const todosDelete = ({ uid }) => {
           .remove()
           .then(() => {
             removeToDo(uid,
-              (isSuccess,object)=>{
+              (isSuccess,objects)=>{
                 if(isSuccess){
-                  Alert.alert('Xoá nhắc việc thành công');
+                  var newListToDo = [];
+                  objects.forEach(element => {
+                      var newElement = JSON.parse(JSON.stringify(element));
+                      newElement.priority = JSON.parse(element.priority);
+                      newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+                      if(element.syncStatus !== 'delete') {
+                        newListToDo.push(newElement)
+                      }
+                  });
+                  console.log(newListToDo);
+                  
+                  dispatch({ type: TODO_REMOVE, payload: newListToDo});
+                  Actions.todoList({ type: 'reset' });
                 } else {
                   Alert.alert('Xoá nhắc việc không thành công');
                 }
-                dispatch({ type: TODO_UPDATE});
-                Actions.todoList({ type: 'reset' });
               }
             )
           });
         } else {
-          removeToDo(uid ,(isSucess,object)=>{
+          updateToDo({ title, content, priority, datetime, status, syncStatus: 'delete', uid },(isSucess,objects)=>{
             if(isSucess){
-              Alert.alert('Xoá nhắc việc thành công');
+              // Alert.alert('Cập nhật nhắc việc thành công');
+              var newListToDo = [];
+              objects.forEach(element => {
+                  var newElement = JSON.parse(JSON.stringify(element));
+                  newElement.priority = JSON.parse(element.priority);
+                  newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+                  if(element.syncStatus !== 'delete') {
+                    newListToDo.push(newElement)
+                  }
+              });
+              dispatch({ type: TODO_UPDATE, payload: newListToDo});
+              Actions.todoList({ type: 'reset' });
             } else {
-              Alert.alert('Xoá nhắc việc không thành công');
+              Alert.alert('Cập nhật nhắc việc không thành công');
             } 
-            dispatch({ type: TODO_UPDATE});
-            Actions.todoList({ type: 'reset' });
+            
           })
+          // removeToDo(uid ,(isSucess,objects)=>{
+          //   if(isSucess){
+          //     var newListToDo = [];
+          //     objects.forEach(element => {
+          //         var newElement = JSON.parse(JSON.stringify(element));
+          //         newElement.priority = JSON.parse(element.priority);
+          //         newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+          //         newListToDo.push(newElement)
+          //     });
+          //     dispatch({ type: TODO_REMOVE, payload: newListToDo});
+          //     Actions.todoList({ type: 'reset' });
+          //   } else {
+          //     Alert.alert('Xoá nhắc việc không thành công');
+          //   } 
+          // })
         }
       })
     };

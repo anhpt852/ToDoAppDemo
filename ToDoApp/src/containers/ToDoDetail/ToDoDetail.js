@@ -18,6 +18,7 @@ import CommonTextField from '../../components/TextField/CommonTextField';
 import CommonDropDownPopupObjectInputWithIcon from '../../components/TextField/CommonDropDownPopupObjectInputWithIcon';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { todoOnChangeText, todosCreate, todosUpdate, todosDelete } from '../../actions';
+import _ from 'lodash';
 const img_nav_background = require('../../images/NavBar/img_navigation_bar.png');
 const ic_remove_todo = require('../../images/NavBar/ic_remove_todo.png');
 class ToDoDetail extends Component {
@@ -30,9 +31,22 @@ class ToDoDetail extends Component {
             this.props.todoOnChangeText({ prop: 'title', value: this.props.item.title })
             this.props.todoOnChangeText({ prop: 'content', value: this.props.item.content })
             this.props.todoOnChangeText({ prop: 'priority', value: this.props.item.priority })
-            const dateFormat = DateFormat(this.props.item.datetime, 'dd-mm-yyyy hh:mm');
-            this.props.todoOnChangeText({ prop: 'datetime', value: this.props.item.datetime })
-            this.props.todoOnChangeText({ prop: 'datetimeText',value: dateFormat })
+            const dateFormat = DateFormat(moment(this.props.item.datetime));
+            this.props.todoOnChangeText({ prop: 'datetime', value: moment(this.props.item.datetime).toDate() })
+            this.props.todoOnChangeText({ prop: 'datetimeText',value: moment(this.props.item.datetime).format('hh:mm A - dddd, MMM DD YYYY') })
+        } else {
+            this.props.todoOnChangeText({ prop: 'title', value: '' })
+            this.props.todoOnChangeText({ prop: 'titleError', value: '' })
+            this.props.todoOnChangeText({ prop: 'content', value: '' })
+            this.props.todoOnChangeText({ prop: 'contentError', value: '' })
+            this.props.todoOnChangeText({ prop: 'priority', value: {
+                id: 1,
+                value: 'Cao',
+            } })
+            this.props.todoOnChangeText({ prop: 'priorityError', value: '' })
+            this.props.todoOnChangeText({ prop: 'datetime', value: new Date() })
+            this.props.todoOnChangeText({ prop: 'datetimeText',value: '' })
+            this.props.todoOnChangeText({ prop: 'datetimeError', value: '' })
         }
     };
 
@@ -41,12 +55,38 @@ class ToDoDetail extends Component {
     }
 
     onConfirmClick(){
-        const {title, content , priority, datetime} = this.props;
-        if(!this.props.item) {
-            this.props.todosCreate({title, content , priority, datetime});
-        } else {
-            this.props.todosUpdate({title, content , priority, datetime, uid: this.props.item.uid});
+        const {title, titleError, content , contentError, priority, priorityError, datetimeText, datetime} = this.props;
+        var isValidate = true;
+        if (title.length <= 0) {
+            isValidate = false;
+            this.props.todoOnChangeText({ prop: 'titleError', value: 'Vui lòng nhập tiêu đề' })
         }
+        if (content.length <= 0) {
+            isValidate = false;
+            this.props.todoOnChangeText({ prop: 'contentError', value: 'Vui lòng nhập nội dung' })
+        }
+        if (_.isEmpty(priority)) {
+            isValidate = false;
+            this.props.todoOnChangeText({ prop: 'priorityError', value: 'Vui lòng nhập mức độ ưu tiên' })
+        }
+        if (datetimeText.length <= 0) {
+            isValidate = false;
+            this.props.todoOnChangeText({ prop: 'datetimeError', value: 'Vui lòng nhập ngày tháng nhắc viêc' })
+        }
+
+        if(isValidate){
+            if(!this.props.item) {
+                this.props.todosCreate({title, content , priority, datetime});
+            } else {
+                this.props.todosUpdate({title, content , priority, datetime, uid: this.props.item.uid});
+            }
+        }
+        
+    }
+
+    onCompleteClick(){
+        const {title, content , priority, status, datetime, uid} = this.props.item;
+        this.props.todosUpdate({title, content, priority, datetime, status: !status, uid});
     }
 
     showDateTimePicker(){
@@ -61,7 +101,7 @@ class ToDoDetail extends Component {
     } 
     
     handleDateTimePicker = (date) => {
-        const dateFormat = DateFormat(date, 'dd-mm-yyyy hh:mm');
+        const dateFormat = moment(date).format('hh:mm A - dddd, MMM DD YYYY');
         this.props.todoOnChangeText({ prop: 'datetime', value: date })
         this.props.todoOnChangeText({ prop: 'datetimeText',value: dateFormat })
         this.setState({isDateTimePickerVisible:false});
@@ -75,7 +115,7 @@ class ToDoDetail extends Component {
             <View style={container}>
                 <Navbar
                     hasBackBtn
-                    title="Chi tiết nhắc nhở"
+                    title="Chi tiết nhắc việc"
                     hasRightBtn = {this.props.item ? true : false}
                     customRightImg={ic_remove_todo}
                     backgroundImg={img_nav_background}
@@ -168,6 +208,7 @@ class ToDoDetail extends Component {
                                 />
                                 <DateTimePicker
                                     mode={'datetime'}
+                                    is24Hour={false}
                                     isVisible={this.state.isDateTimePickerVisible}
                                     onConfirm={this.handleDateTimePicker.bind(this)}
                                     onCancel={this.hideDateTimePicker.bind(this)}
@@ -180,11 +221,19 @@ class ToDoDetail extends Component {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <TouchableOpacity style={saveButton} onPress={this.onConfirmClick.bind(this)}>
-                        <View style={saveButtonView}>
-                            <Text style={saveButtonTitle}>{this.props.item ? 'Lưu' : 'Tạo'}</Text>
-                        </View>
-                    </TouchableOpacity>
+                    <View style={saveButton}>
+                        <TouchableOpacity style={saveButton} onPress={this.onConfirmClick.bind(this)}>
+                            <View style={saveButtonView}>
+                                <Text style={saveButtonTitle}>{this.props.item ? 'Lưu' : 'Tạo'}</Text>
+                            </View>
+                        </TouchableOpacity>
+                        {this.props.item && !this.props.item.status && <TouchableOpacity style={saveButton} onPress={this.onCompleteClick.bind(this)}>
+                            <View style={[saveButtonView,{paddingHorizontal: 20,paddingVertical: 10}]}>
+                                <Text style={saveButtonTitle}>{'Hoàn thành'}</Text>
+                            </View>
+                        </TouchableOpacity>}
+                    </View>
+                    
                 </View>
                 </KeyboardAwareScrollView >
             </TouchableWithoutFeedback>

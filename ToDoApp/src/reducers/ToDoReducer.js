@@ -1,5 +1,7 @@
 import {
     TODO_ONCHANGETEXT,
+    GET_LIST_TODO,
+    GET_LIST_TODO_FAIL,
     GET_LIST_TODO_SUCCESS,
     TODO_CREATE,
     TODO_UPDATE,
@@ -27,7 +29,6 @@ import {
     datetime: new Date(),
     datetimeText: '',
     datetimeError: '',
-    error: '',
     loading: false
   };
   
@@ -42,11 +43,15 @@ import {
         case TODO_CREATE:
             return INITIAL_STATE;
         case TODO_UPDATE:
-            return INITIAL_STATE;
+            return { ...state, INITIAL_STATE, listToDo: action.payload};
         case TODO_REMOVE:
-            return INITIAL_STATE;
+            return { ...state, INITIAL_STATE, listToDo: action.payload};
+        case GET_LIST_TODO:
+            return { ...state, loading: true }
         case GET_LIST_TODO_SUCCESS:
-            return { ...state, INITIAL_STATE, todos: action.payload.todos, listToDo: action.payload.listToDo};
+            return { ...state, INITIAL_STATE, todos: action.payload.todos, loading: false, listToDo: action.payload.listToDo};
+        case GET_LIST_TODO_FAIL:
+            return { ...state, loading: false }
         default:
             return state;
     }
