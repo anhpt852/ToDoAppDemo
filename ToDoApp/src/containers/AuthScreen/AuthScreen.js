@@ -21,7 +21,7 @@ import {Actions} from 'react-native-router-flux';
 import icUsename from '../../images/Login/ic_at.png';
 import icPassword from '../../images/Login/ic_lock.png';
 import icLook from '../../images/Login/ic_eye.png';
-import icLogo from '../../images/Common/ic_launcher.png';
+import icLogo from '../../images/Common/ic_logo.png';
 
 class AuthScreen extends Component {
 
