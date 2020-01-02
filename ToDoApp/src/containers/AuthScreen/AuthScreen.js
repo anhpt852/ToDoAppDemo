@@ -11,13 +11,14 @@ import {
 
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { emailChanged, passwordChanged, loginUser,registerUser ,authModeChanged } from '../../actions';
+import { emailChanged, passwordChanged, loginUser,registerUser ,authModeChanged, showLoading, hideLoading } from '../../actions';
 import Loader from '../../components/Loader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import CommonTextField from '../../components/TextField/CommonTextField';
 import PasswordTextField from '../../components/TextField/PasswordTextField';
 import styles from "./AuthScreenStyles"
 import {Actions} from 'react-native-router-flux';
+import CF from '../../commons/CF'
 import icUsename from '../../images/Login/ic_at.png';
 import icPassword from '../../images/Login/ic_lock.png';
 import icLook from '../../images/Login/ic_eye.png';
@@ -31,14 +32,33 @@ class AuthScreen extends Component {
 
   constructor(props) {
     super(props);
+    
   }
 
   actionClick() {
     const { email, password } = this.props;
-    if (this.props.isLogin ) {
-      this.props.loginUser({ email, password });
+    if (email.length > 0 && password.length > 0) {
+      this.props.showLoading();
+      console.log('here');
+      CF.checkNetwork((haveNetwork)=>{
+        this.props.hideLoading();
+        if(haveNetwork) {
+          if (this.props.isLogin ) {
+            this.props.loginUser({ email, password });
+          } else {
+            this.props.registerUser({ email, password });
+          }
+        } else {
+          setTimeout(() => {
+            Alert.alert('Vui lòng kiểm tra kết nối mạng');
+          }, 100);
+          
+        }
+        
+      })
+      
     } else {
-      this.props.registerUser({ email, password });
+      Alert.alert('Thông tin đăng nhập không được để trống');
     }
   }
 
@@ -131,4 +151,4 @@ const mapStateToProps = state => {
 };
 
 AppRegistry.registerComponent('AuthScreen', () => AuthScreen);
-export default connect(mapStateToProps, { emailChanged, passwordChanged, loginUser,registerUser ,authModeChanged }) (AuthScreen);
+export default connect(mapStateToProps, { emailChanged, passwordChanged, loginUser,registerUser ,authModeChanged, showLoading, hideLoading }) (AuthScreen);

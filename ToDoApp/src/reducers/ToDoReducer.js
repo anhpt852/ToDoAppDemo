@@ -39,7 +39,7 @@ import {
         case TODO_SETSELECTED_LIST:
             return { ...state, listSelectedTodo: action.payload };
         case SET_TODO_LIST:
-            return { ...state, listToDo: action.payload };
+            return { ...state, loading: false, listToDo: action.payload };
         case TODO_CREATE:
             return INITIAL_STATE;
         case TODO_UPDATE:

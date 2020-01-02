@@ -41,7 +41,7 @@ target 'ToDoApp' do
 
   pod 'RealmJS', :path => '../node_modules/realm'
 
-  pod 'Picker', :path => '../node_modules/react-native-picker'
+  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
 
   target 'ToDoAppTests' do
     inherit! :search_paths

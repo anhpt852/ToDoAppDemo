@@ -17,7 +17,7 @@ import {
 import _ from 'lodash';
 import CF from '../commons/CF'
 import moment from 'moment';
-import {addToDo, updateToDo, removeToDo} from '../commons/Database';
+import {getAllToDo,addToDo, updateToDo, removeToDo} from '../commons/Database';
 export const todoOnChangeText = ({ prop, value }) => {
     return {
       type: TODO_ONCHANGETEXT,
@@ -43,35 +43,64 @@ export const todosFetch = () => {
     const { currentUser } = firebase.auth();
   
     return (dispatch) => {
+      
       dispatch({ type: SHOW_LOADING });
-      firebase.database().ref(`/users/${currentUser.uid}/todos`)
-        .on('value', snapshot => {
-          console.log(snapshot.val());
-            const listToDo =_.map(snapshot.val(), (val, uid) => {
-                return { ...val, uid };
-            });
-            console.log(listToDo);
-            addToDo(listToDo,
-                (isSuccess,object)=>{
-                    if (isSuccess) {
-                        var newListToDo = [];
-                        object.forEach(element => {
-                            var newElement = JSON.parse(JSON.stringify(element));
-                            newElement.priority = JSON.parse(element.priority);
-                            newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
-                            if(element.syncStatus !== 'delete') {
-                              newListToDo.push(newElement)
-                            }
-                        });
-                        console.log(newListToDo);
-                        dispatch({ type: GET_LIST_TODO_SUCCESS, payload: {todos: snapshot.val() ,listToDo: newListToDo} });
-                        
-                    } else {
-                      dispatch({ type: GET_LIST_TODO_SUCCESS, payload: {todos: snapshot.val() ,listToDo: listToDo} });
-                    }
-                }
-            )
-        });
+      CF.checkNetwork((haveNetwork)=>{
+        dispatch({ type: HIDE_LOADING });
+        if (haveNetwork) {
+          console.log('aaa');
+          firebase.database().ref(`/users/${currentUser.uid}/todos`)
+          .on('value', snapshot => {
+            console.log(snapshot.val());
+              const listToDo =_.map(snapshot.val(), (val, uid) => {
+                  return { ...val, uid };
+              });
+              console.log(listToDo);
+              addToDo(listToDo,
+                  (isSuccess,object)=>{
+                      if (isSuccess) {
+                          var newListToDo = [];
+                          object.forEach(element => {
+                              var newElement = JSON.parse(JSON.stringify(element));
+                              newElement.priority = JSON.parse(element.priority);
+                              newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+                              if(element.syncStatus !== 'delete') {
+                                newListToDo.push(newElement)
+                              }
+                          });
+                          console.log(newListToDo);
+                          dispatch({ type: GET_LIST_TODO_SUCCESS, payload: {todos: snapshot.val() ,listToDo: newListToDo} });
+                          
+                      } else {
+                        dispatch({ type: GET_LIST_TODO_SUCCESS, payload: {todos: snapshot.val() ,listToDo: listToDo} });
+                      }
+                  }
+              )
+          });
+        } else {
+          console.log('aa');
+            dispatch({ type: HIDE_LOADING });
+            getAllToDo((isSuccess,objects)=>{
+                console.log('aa');
+                
+                if (isSuccess && objects.length > 0) {
+                    var newListToDo = [];
+                    objects.forEach(element => {
+                        var newElement = JSON.parse(JSON.stringify(element));
+                        newElement.priority = JSON.parse(element.priority);
+                        newElement.datetime = moment.utc(element.datetime).format('YYYY-MM-DD[T]HH:mm:ss[Z]');
+                        if(element.syncStatus !== 'delete') {
+                            newListToDo.push(newElement)
+                          }
+                    });
+                    dispatch({ 
+                      type: SET_TODO_LIST,
+                      payload: newListToDo
+                    });
+                } 
+            })
+        }
+      })
     };
 };
 
@@ -91,10 +120,12 @@ export const todosCreate = ({ title, content, priority, datetime }) => {
             }, 200);
           });
         } else {
-          addToDo([{ title, content, priority, datetime, syncStatus: 'create_new', uid: moment(moment(datetime).format('YYYY-MM-DD[T]HH:mm:ss')).valueOf()}],(isSucess,object)=>{
+          addToDo([{ title, content, priority, datetime, syncStatus: 'create_new', uid: moment(datetime).format('YYYY-MM-DD[T]HH:mm:ss').valueOf()}],(isSucess,object)=>{
             if(isSucess){
               dispatch({ type: TODO_CREATE});
-              Actions.todoList({ type: 'reset' });
+              setTimeout(() => {
+                Actions.todoList({ type: 'reset' });
+              }, 200);
             } else {
               Alert.alert('Tạo nhắc việc không thành công');
             }
@@ -165,6 +196,7 @@ export const todosDelete = ({title, content, priority, datetime, status, uid}) =
     return (dispatch) => {
       dispatch({ type: SHOW_LOADING });
       CF.checkNetwork((haveNetwork)=>{
+        dispatch({ type: HIDE_LOADING });
         if (haveNetwork) {
           firebase.database().ref(`/users/${currentUser.uid}/todos/${uid}`)
           .remove()

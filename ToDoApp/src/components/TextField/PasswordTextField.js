@@ -54,6 +54,7 @@ class PasswordTextField extends Component {
                         placeholderTextColor={'#56575B'}
                         underlineColorAndroid="transparent"
                         style={textfield}
+                        value={this.props.value}
                         secureTextEntry={this.state.showPassword}
                         autoCorrect={false}
                         onBlur={this.props.onBlur ? this.props.onBlur : this.disableGreenLine}

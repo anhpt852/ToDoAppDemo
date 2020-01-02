@@ -204,9 +204,9 @@ const styles = StyleSheet.create({
           }),
         // 
         fontFamily:'Helvetica Neue',
-        paddingVertical: 0,
-        marginVertical: 0,
-        borderWidth: 0, 
+        // paddingVertical: 0,
+        // marginVertical: 0,
+        // borderWidth: 0, 
         color: '#5c5c5c',
         fontSize: 18,
         // backgroundColor: 'yellow'

@@ -18,7 +18,7 @@ class Routes extends Component {
     }
   };
 
-  componentWillMount() {
+  componentDidMount() {
     console.log('aaaa');
     
     CF.getUserInfo((userInfo)=>{
@@ -54,7 +54,8 @@ class Routes extends Component {
             } else if (newElement.syncStatus === 'delete'){
               removedItems.push(newElement);
             } else if (newElement.syncStatus === 'create_new'){
-              createdItems.push({...newElement,uid: null, syncStatus:'none'});
+              removedItems.push(newElement);
+              createdItems.push({...newElement, syncStatus:'none'});
             }
 
           });
@@ -66,7 +67,7 @@ class Routes extends Component {
           createdItems.map(item => {
             var newPostKey = firebase.database().ref(`/users/${currentUser.uid}/todos`).push().key;
             updates[newPostKey] = item;
-            tmp.push(item)
+            tmp.push({...item,uid: newPostKey})
           });
 
           updateItems.map(item => {

@@ -124,7 +124,7 @@ class ToDoDetail extends Component {
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                 <KeyboardAwareScrollView
                     ref={scrollView => this.scrollView = scrollView}
-                    // contentContainerStyle={styles.scrollView}
+                    contentContainerStyle={{flexGrow: 1}}
                     resetScrollToCoords={{ x: 0, y: 0 }}
                     scrollEnabled={true}
                 >

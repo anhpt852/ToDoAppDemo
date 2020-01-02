@@ -11,8 +11,22 @@ import {
   LOGIN_USER_SUCCESS,
   LOGIN_USER_FAIL,
   LOGIN_USER,
-  AUTH_MODE_CHANGED
+  AUTH_MODE_CHANGED,
+  SHOW_LOADING,
+  HIDE_LOADING
 } from './types';
+
+export const showLoading = () => {
+  return {
+    type: SHOW_LOADING,
+  };
+};
+
+export const hideLoading = () => {
+  return {
+    type: HIDE_LOADING,
+  };
+};
 
 export const emailChanged = (text) => {
   return {
@@ -50,7 +64,8 @@ export const registerUser = ({ email, password }) => {
 export const loginUser = ({ email, password }) => {
   return (dispatch) => {
     dispatch({ type: LOGIN_USER });
-
+    console.log('aaa');
+    
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then(user => loginUserSuccess(dispatch, user))
       .catch((error) => {

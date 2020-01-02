@@ -1,8 +1,9 @@
 import {
   AsyncStorage,
-  Platform
+  Platform,
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo";
+import { checkInternetConnection } from 'react-native-offline';
 // import {
 //   NavigationActions
 // } from '../containers/NavigationActionsClass'
@@ -17,14 +18,22 @@ function formatMoneyText(str){
 }
 
 //  kiểm tra tình trạng mạng có hay chưa
-function checkNetwork(callback){
-  NetInfo.fetch().then((connectionInfo) => {
-    if(connectionInfo.type === 'none'){
-      callback(false);
-    } else {
-      callback(true);
-    }
-  });
+async function checkNetwork(callback){
+  const isConnected = await checkInternetConnection();
+  console.log('aa',isConnected);
+  
+  callback(isConnected)
+  // NetInfo.fetch().then((connectionInfo) => {
+  //   console.log(connectionInfo);
+    
+  //   if(connectionInfo.type === 'none'){
+  //     callback(false);
+  //   } else {
+  //     callback(true);
+  //   }
+    
+  // });
+  
 }
 
 // kiểm tra engine nhận dạng có available hay không
